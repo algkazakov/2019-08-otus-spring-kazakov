@@ -10,13 +10,15 @@ import java.util.Scanner;
 
 public class SurvayRunnerServiceImpl implements SurvayRunnerService {
 
-    private Survay sv;
+    private final SurvayDao dao;
 
-    public SurvayRunnerServiceImpl(SurvayDao dao) {
-        sv = dao.getSurvay();
+    public SurvayRunnerServiceImpl(final SurvayDao dao) {
+        this.dao = dao;
     }
 
+    @Override
     public void run() {
+        Survay sv = dao.getSurvay();
         if (sv != null || sv.getQuestions().isEmpty()) {
             Scanner in = new Scanner(System.in);
             System.out.println("Здравствуйте, введите Ваше ФИО: ");
