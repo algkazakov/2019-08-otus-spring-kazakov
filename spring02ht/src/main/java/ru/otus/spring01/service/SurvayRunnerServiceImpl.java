@@ -20,11 +20,13 @@ public class SurvayRunnerServiceImpl implements SurvayRunnerService {
     private final SurvayDao dao;
     private final MessageSource ms;
     private final Locale locale;
+    private final int passNumber;
 
-    public SurvayRunnerServiceImpl(final SurvayDao dao, final MessageSource ms, @Value("${app.locale}") final String locale) {
+    public SurvayRunnerServiceImpl(final SurvayDao dao, final MessageSource ms, @Value("${app.locale}") final String locale, @Value("${app.passNumber}") final int passNumber) {
         this.dao = dao;
         this.ms = ms;
         this.locale = locale == null ? new Locale("ru") : new Locale(locale);
+        this.passNumber = passNumber;
     }
 
     @Override
@@ -51,7 +53,8 @@ public class SurvayRunnerServiceImpl implements SurvayRunnerService {
                 }
             }
             System.out.println(ms.getMessage("survay.result", new Object [] {name, score, qCount}, locale));
-            if (score >= 4) {
+            int pCount = passNumber > qCount ? qCount : passNumber;
+            if (score >= pCount) {
                 System.out.println(ms.getMessage("survay.result.pass", null, locale));
             } else {
                 System.out.println(ms.getMessage("survay.result.fail", null, locale));
