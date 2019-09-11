@@ -17,8 +17,6 @@ public class Main {
             SurvayRunnerService service = context.getBean(SurvayRunnerService.class);
 
             service.run();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
