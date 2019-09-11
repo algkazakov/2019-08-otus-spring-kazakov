@@ -1,6 +1,8 @@
 package ru.otus.spring01.dao;
 
 import com.opencsv.CSVReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -21,6 +23,8 @@ import java.util.List;
 @PropertySource("classpath:survay.properties")
 public class CSVSurvayDao implements SurvayDao {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
     @Value("${csv.file}")
     private String csvFileName;
 
@@ -34,11 +38,7 @@ public class CSVSurvayDao implements SurvayDao {
     }
 
     private List<List<String>> getCSVRecords() {
-        try {
-            setCSVLocalizedResourceName();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setCSVLocalizedResourceName();
         try (InputStream is = CSVSurvayDao.class.getResourceAsStream("/" + csvFileName)) {
             if (is != null) {
                 try (CSVReader csvReader = new CSVReader(new InputStreamReader(is));) {
@@ -49,22 +49,27 @@ public class CSVSurvayDao implements SurvayDao {
                     }
                     return records;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }
 
-    private void setCSVLocalizedResourceName() throws IOException {
+    private void setCSVLocalizedResourceName()  {
         if (locale != null) {
             String csvLocaleFileName = "i18n/" + csvFileName.substring(0, csvFileName.indexOf('.')) + "_" + locale + "." + csvFileName.substring(csvFileName.indexOf('.') + 1);
             try (InputStream is = CSVSurvayDao.class.getResourceAsStream("/" + csvLocaleFileName)) {
                 if (is != null) {
                     csvFileName = csvLocaleFileName;
+                } else {
+                    LOGGER.info("Resource " + csvFileName + " with locale " + locale + " not found");
                 }
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+                csvFileName = "i18n/" + csvFileName.substring(0, csvFileName.indexOf('.')) + "_ru.csv";
             }
         }
     }
@@ -76,7 +81,10 @@ public class CSVSurvayDao implements SurvayDao {
                 if (!record.isEmpty()) {
                     Question q = new Question(record.get(0));
                     for (int i = 1; i < record.size();  i++) {
-                        Answer a = new Answer(record.get(i));
+                        String text = record.get(i).endsWith("*") ?
+                                record.get(i).substring(0, record.get(i).length() - 1) : record.get(i);
+                        boolean isRight = record.get(i).endsWith("*");
+                        Answer a = new Answer(text, isRight);
                         q.addAnswer(a);
                     }
                     sv.addQuestion(q);

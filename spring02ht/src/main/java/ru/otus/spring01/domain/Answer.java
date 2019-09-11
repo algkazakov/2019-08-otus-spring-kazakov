@@ -5,9 +5,9 @@ public class Answer {
     private String text;
     private boolean isRigth;
 
-    public Answer (String text) {
-        this.text = text.endsWith("*") ? text.substring(0, text.length() - 1) : text;
-        this.isRigth = text.endsWith("*");
+    public Answer (String text, boolean isRight) {
+        this.text = text;
+        this.isRigth = isRight;
     }
 
     public boolean isRigth() {

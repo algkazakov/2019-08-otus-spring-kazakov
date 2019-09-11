@@ -1,6 +1,7 @@
 package ru.otus.spring01.dao;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import ru.otus.spring01.domain.Question;
 import ru.otus.spring01.domain.Survay;
 
@@ -14,7 +15,7 @@ class CSVSurvayDaoTest {
         dao.setCsvFileName("survay_test.csv");
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getSurvay() {
         Survay sv = dao.getSurvay();
         assertEquals(5, sv.getQuestions().size());
