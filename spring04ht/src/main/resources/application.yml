@@ -1,0 +1,4 @@
+application:
+  file: survay.csv
+  passNumber: 4
+  locale: ru
