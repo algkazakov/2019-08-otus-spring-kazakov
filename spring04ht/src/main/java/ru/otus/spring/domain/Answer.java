@@ -2,10 +2,10 @@ package ru.otus.spring.domain;
 
 public class Answer {
 
-    private String text;
-    private boolean isRigth;
+    private final String text;
+    private final boolean isRigth;
 
-    public Answer (String text, boolean isRight) {
+    public Answer (final String text, final boolean isRight) {
         this.text = text;
         this.isRigth = isRight;
     }

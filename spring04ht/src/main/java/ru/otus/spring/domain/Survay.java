@@ -11,10 +11,6 @@ public class Survay {
         return questions;
     }
 
-    public Question getQuestion(int number) {
-        return questions.get(number);
-    }
-
     public void addQuestion(Question q) {
         questions.add(q);
     }

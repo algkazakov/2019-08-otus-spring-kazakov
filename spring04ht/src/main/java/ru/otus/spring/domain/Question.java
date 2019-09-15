@@ -5,10 +5,10 @@ import java.util.List;
 
 public class Question {
 
-    private String text;
+    private final String text;
     private List<Answer> answers;
 
-    public Question(String text) {
+    public Question(final String text) {
         this.text = text;
         answers = new ArrayList();
     }
