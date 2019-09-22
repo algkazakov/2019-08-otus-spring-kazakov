@@ -6,7 +6,7 @@ import java.util.List;
 public class Question {
 
     private final String text;
-    private List<Answer> answers;
+    private final List<Answer> answers;
 
     public Question(final String text) {
         this.text = text;
