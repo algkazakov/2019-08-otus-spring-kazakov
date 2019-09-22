@@ -2,10 +2,10 @@ package ru.otus.spring.l10n;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.stereotype.Service;
 
-@Service
+@Configuration
 public class AppLocalizer {
     @Bean
     public MessageSource messageSource() {
