@@ -1,0 +1,9 @@
+application:
+  file: survay.csv
+  passNumber: 4
+  locale: ru
+
+spring:
+  shell:
+    interactive:
+      enabled: true
