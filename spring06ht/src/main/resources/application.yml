@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:bookdb
+    initialization-mode: always
+
+  shell:
+    interactive:
+      enabled: true
