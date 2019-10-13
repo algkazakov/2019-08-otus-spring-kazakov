@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Survay {
 
-    private List<Question> questions = new ArrayList();
+    private final List<Question> questions = new ArrayList();
 
     public List<Question> getQuestions() {
         return questions;
