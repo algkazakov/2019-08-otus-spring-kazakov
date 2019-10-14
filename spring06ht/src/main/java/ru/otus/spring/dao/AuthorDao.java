@@ -3,7 +3,6 @@ package ru.otus.spring.dao;
 import ru.otus.spring.domain.Author;
 
 import java.util.List;
-import java.util.Set;
 
 public interface AuthorDao {
 

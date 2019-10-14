@@ -1,7 +1,7 @@
 package ru.otus.spring.dao;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -78,18 +78,22 @@ public class BookDaoJdbc implements BookDao {
     @Override
     public BookDTO getById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        BookDTO result = jdbc.queryForObject(
-                "select * from BOOKS where ID = :id", params, new BookMapper()
-        );
-        List<Author> authors = jdbc.query(
-                "select a.ID, a.NAME from BOOKS_AUTHORS ba join AUTHORS a on ba.AUTHORID = a.ID where ba.BOOKID = :id", params, new AuthorMapper()
-        );
-        result.setAuthors(authors);
-        List<Genre> genres = jdbc.query(
-                "select g.ID, g.NAME from BOOKS_GENRES bg join GENRES g on bg.GENREID = g.ID where bg.BOOKID = :id", params, new GenreMapper()
-        );
-        result.setGenres(genres);
-        return result;
+        try {
+            BookDTO result = jdbc.queryForObject(
+                    "select * from BOOKS where ID = :id", params, new BookMapper()
+            );
+            List<Author> authors = jdbc.query(
+                    "select a.ID, a.NAME from BOOKS_AUTHORS ba join AUTHORS a on ba.AUTHORID = a.ID where ba.BOOKID = :id", params, new AuthorMapper()
+            );
+            result.setAuthors(authors);
+            List<Genre> genres = jdbc.query(
+                    "select g.ID, g.NAME from BOOKS_GENRES bg join GENRES g on bg.GENREID = g.ID where bg.BOOKID = :id", params, new GenreMapper()
+            );
+            result.setGenres(genres);
+            return result;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

@@ -22,6 +22,13 @@ class BookDaoJdbcTest {
     @Autowired
     private BookDaoJdbc repositoryJdbc;
 
+    @DisplayName("должен уметь считать количество всех книг в БД")
+    @Test
+    void shouldReturnCountBooks() {
+        val count = repositoryJdbc.count();
+        assertThat(count).isEqualTo(EXPECTED_NUMBER_OF_BOOKS);
+    }
+
     @DisplayName("должен загружать список всех книг с полной информацией о них")
     @Test
     void shouldReturnCorrectBooksListWithAllInfo() {
@@ -30,6 +37,16 @@ class BookDaoJdbcTest {
                 .allMatch(b -> !b.getBook().getName().equals(""))
                 .allMatch(b -> b.getAuthors() != null && b.getAuthors().size() > 0)
                 .allMatch(b -> b.getGenres() != null && b.getGenres().size() > 0);
+    }
+
+    @DisplayName("должен загружать список всех книг без полной информации о них")
+    @Test
+    void shouldReturnCorrectBooksListWithoutAllInfo() {
+        val books = repositoryJdbc.getAll();
+        assertThat(books).isNotNull().hasSize(EXPECTED_NUMBER_OF_BOOKS)
+                .allMatch(b -> !b.getBook().getName().equals(""))
+                .allMatch(b -> b.getAuthors() != null && b.getAuthors().isEmpty())
+                .allMatch(b -> b.getGenres() != null && b.getGenres().isEmpty());
     }
 
     @DisplayName("должен загружать ровно 1 книгу")
@@ -46,11 +63,12 @@ class BookDaoJdbcTest {
     @Test
     void shouldAddOneBook() {
         BookDTO bookDTO = new BookDTO();
-        bookDTO.setBook(new Book(5, "Новая книга"));
+        long nexBookId = repositoryJdbc.getNextId();
+        bookDTO.setBook(new Book(nexBookId, "Новая книга"));
         bookDTO.addAuthor(new Author(1, "Christian Bauer"));
         bookDTO.addAuthor(new Author(2, "Gavin King"));
         repositoryJdbc.insert(bookDTO);
-        bookDTO = repositoryJdbc.getById(5);
+        bookDTO = repositoryJdbc.getById(nexBookId);
         assertThat(bookDTO).isNotNull()
                 .matches(b -> !b.getBook().getName().equals(""))
                 .matches(b -> b.getAuthors() != null && b.getAuthors().size() == 2)
@@ -69,6 +87,14 @@ class BookDaoJdbcTest {
         assertThat(bookDTO).isNotNull()
                 .matches(b -> b.getBook().getName().equals("Совсем новая книга"))
                 .matches(b -> b.getAuthors() != null && b.getAuthors().size() == 2 && ((Author) b.getAuthors().toArray()[1]).getName().equals("Gary Gregory"));
+    }
+
+    @DisplayName("должен удалять книгу")
+    @Test
+    void shouldDeleteBookNameAndAddAuthor() {
+        repositoryJdbc.deleteById(4);
+        BookDTO bookDTO = repositoryJdbc.getById(4);
+        assertThat(bookDTO).isNull();
     }
 
 

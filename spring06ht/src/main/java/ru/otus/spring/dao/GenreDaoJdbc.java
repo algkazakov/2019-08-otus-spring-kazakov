@@ -1,5 +1,6 @@
 package ru.otus.spring.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -43,9 +44,13 @@ public class GenreDaoJdbc implements GenreDao {
     @Override
     public Genre getById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        return jdbc.queryForObject(
-                "select * from GENRES where ID = :id", params, new GenreMapper()
-        );
+        try {
+            return jdbc.queryForObject(
+                    "select * from GENRES where ID = :id", params, new GenreMapper()
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
