@@ -66,10 +66,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     @Override
     public void deleteById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        jdbc.update("delete from BOOKS_AUTHORS where AUTHORID = :id", params
-        );
-        jdbc.update("delete from AUTHORS where ID = :id", params
-        );
+        jdbc.update("delete from AUTHORS where ID = :id", params);
     }
 
     @Override

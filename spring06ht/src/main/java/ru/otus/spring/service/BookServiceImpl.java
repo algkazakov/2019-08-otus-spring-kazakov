@@ -5,9 +5,8 @@ import ru.otus.spring.dao.AuthorDao;
 import ru.otus.spring.dao.BookDao;
 import ru.otus.spring.dao.GenreDao;
 import ru.otus.spring.domain.Author;
-import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.dto.BookDTO;
+import ru.otus.spring.domain.Book;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void list() {
-        List<BookDTO> list = dao.getAllFull();
+        List<Book> list = dao.getAllFull();
         consoleService.printBookList(list);
     }
 
@@ -43,8 +42,7 @@ public class BookServiceImpl implements BookService {
         consoleService.printGenreList(lst);
         List<Long> genreIds = consoleService.enterGenres();
         List<Genre> genres = daoGenre.getListById(genreIds);
-        BookDTO book = new BookDTO();
-        book.setBook(new Book(dao.getNextId(), bookName));
+        Book book = new Book(0, bookName);
         book.setAuthors(authors);
         book.setGenres(genres);
         dao.insert(book);
@@ -52,13 +50,13 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void edit() {
-        List<BookDTO> list = dao.getAll();
+        List<Book> list = dao.getAll();
         consoleService.printBookList(list);
         long bookId = consoleService.enterBookNumber();
-        BookDTO book = dao.getById(bookId);
+        Book book = dao.getById(bookId);
         consoleService.printBook(book);
         String bookName = consoleService.enterBookName();
-        book.setBook(new Book(book.getBook().getId(), bookName));
+        book = new Book(book.getId(), bookName);
         List<Author> aList = daoAuthor.getAll();
         consoleService.printAuthorList(aList);
         List<Long> authorIds = consoleService.enterAuthors();

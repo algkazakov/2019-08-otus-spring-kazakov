@@ -1,6 +1,6 @@
 package ru.otus.spring.dao;
 
-import ru.otus.spring.dto.BookDTO;
+import ru.otus.spring.domain.Book;
 
 import java.util.List;
 
@@ -8,15 +8,15 @@ public interface BookDao {
 
     int count();
 
-    void insert(BookDTO book);
+    void insert(Book book);
 
-    void update(BookDTO book);
+    void update(Book book);
 
-    BookDTO getById(long id);
+    Book getById(long id);
 
-    List<BookDTO> getAll();
+    List<Book> getAll();
 
-    List<BookDTO> getAllFull();
+    List<Book> getAllFull();
 
     void deleteById(long id);
 

@@ -2,12 +2,7 @@ package ru.otus.spring.service;
 
 import org.springframework.stereotype.Service;
 import ru.otus.spring.dao.AuthorDao;
-import ru.otus.spring.dao.BookDao;
-import ru.otus.spring.dao.GenreDao;
 import ru.otus.spring.domain.Author;
-import ru.otus.spring.domain.Book;
-import ru.otus.spring.domain.Genre;
-import ru.otus.spring.dto.BookDTO;
 
 import java.util.List;
 

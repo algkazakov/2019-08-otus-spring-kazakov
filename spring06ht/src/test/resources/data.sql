@@ -1,4 +1,4 @@
-insert into BOOKS (ID, `NAME`) values (4, 'Test');
+insert into BOOKS (`NAME`) values ('Test');
 
 insert into BOOKS_AUTHORS (BOOKID, AUTHORID) values (4, 1);
 

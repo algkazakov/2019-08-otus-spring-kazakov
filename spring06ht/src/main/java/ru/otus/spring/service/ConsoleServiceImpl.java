@@ -3,7 +3,7 @@ package ru.otus.spring.service;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.dto.BookDTO;
+import ru.otus.spring.domain.Book;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +15,12 @@ public class ConsoleServiceImpl implements ConsoleService {
     private final Scanner in = new Scanner(System.in);
 
     @Override
-    public void printBook(BookDTO book) {
-        System.out.print(book.getBook().getId() + ". ");
+    public void printBook(Book book) {
+        System.out.print(book.getId() + ". ");
         if (!book.getAuthors().isEmpty()) {
             System.out.print(book.getAuthors());
         }
-        System.out.print(" " + book.getBook().getName());
+        System.out.print(" " + book.getName());
         if (!book.getGenres().isEmpty()) {
             System.out.print(" (" + book.getGenres() + ")");
         }
@@ -28,8 +28,8 @@ public class ConsoleServiceImpl implements ConsoleService {
     }
 
     @Override
-    public void printBookList(List<BookDTO> list) {
-        for (BookDTO book: list) {
+    public void printBookList(List<Book> list) {
+        for (Book book: list) {
             printBook(book);
         }
     }

@@ -1,15 +1,14 @@
 package ru.otus.spring.dao;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.dto.BookDTO;
+import ru.otus.spring.dto.BooksAuthorsDto;
+import ru.otus.spring.dto.BooksGenresDto;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,21 +29,24 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public void insert(BookDTO book) {
+    public void insert(Book book) {
         Map<String, Object> params = new HashMap<>();
-        params.put("id", book.getBook().getId());
-        params.put("name", book.getBook().getName());
-        jdbc.update("insert into BOOKS (ID, `NAME`) values (:id, :name)", params);
-        setAuthorsAndGenres(book);
+        params.put("name", book.getName());
+        jdbc.update("insert into BOOKS (`NAME`) values (:name)", params);
+        long nextBookId = jdbc.getJdbcOperations().queryForObject("select  SCOPE_IDENTITY()", Long.class);
+        Book insertedBook = new Book(nextBookId, book.getName());
+        insertedBook.setAuthors(book.getAuthors());
+        insertedBook.setGenres(book.getGenres());
+        setAuthorsAndGenres(insertedBook);
     }
 
-    private void setAuthorsAndGenres(BookDTO book) {
+    private void setAuthorsAndGenres(Book book) {
         Map<String, Object> params;
         if (!book.getAuthors().isEmpty()) {
             Map[] paramaterArray = new Map[book.getAuthors().size()];
             for (int i = 0; i < book.getAuthors().size(); i++) {
                 params = new HashMap<>();
-                params.put("bookid", book.getBook().getId());
+                params.put("bookid", book.getId());
                 params.put("authorid", ((Author) book.getAuthors().toArray()[i]).getId());
                 paramaterArray[i] = params;
             }
@@ -54,7 +56,7 @@ public class BookDaoJdbc implements BookDao {
             Map[] paramaterArray = new Map[book.getGenres().size()];
             for (int i = 0; i < book.getGenres().size(); i++) {
                 params = new HashMap<>();
-                params.put("bookid", book.getBook().getId());
+                params.put("bookid", book.getId());
                 params.put("genreid", ( (Genre) book.getGenres().toArray()[i]).getId());
                 paramaterArray[i] = params;
             }
@@ -63,10 +65,10 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public void update(BookDTO book) {
+    public void update(Book book) {
         Map<String, Object> params = new HashMap<>();
-        params.put("id", book.getBook().getId());
-        params.put("name", book.getBook().getName());
+        params.put("id", book.getId());
+        params.put("name", book.getName());
         jdbc.update("update BOOKS set `NAME` = :name where ID = :id", params);
         if (!book.getAuthors().isEmpty()) {
             jdbc.update("delete from BOOKS_AUTHORS where BOOKID = :id", params);
@@ -76,10 +78,10 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public BookDTO getById(long id) {
+    public Book getById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
         try {
-            BookDTO result = jdbc.queryForObject(
+            Book result = jdbc.queryForObject(
                     "select * from BOOKS where ID = :id", params, new BookMapper()
             );
             List<Author> authors = jdbc.query(
@@ -97,23 +99,29 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public List<BookDTO> getAll() {
+    public List<Book> getAll() {
         return jdbc.query("select * from BOOKS order by ID", new BookMapper());
     }
 
     @Override
-    public List<BookDTO> getAllFull() {
-        return jdbc.query("select b.ID, b.NAME, a.ID as authorID, a.NAME as authorName, g.ID as genreID, g.NAME as genreName " +
-                "from BOOKS b left join BOOKS_AUTHORS ba on b.ID = ba.BOOKID " +
-                "left join AUTHORS a on  ba.AUTHORID = a.ID left join BOOKS_GENRES gb on b.ID = gb.BOOKID " +
-                "left join GENRES g on gb.GENREID = g.ID", new BooksExtractor());
+    public List<Book> getAllFull() {
+        List<Book> books = jdbc.query("select ID, NAME from BOOKS order by ID", new BookMapper());
+        List<Author> authors = jdbc.query("select distinct ID, NAME from AUTHORS join BOOKS_AUTHORS on AUTHORS.ID = BOOKS_AUTHORS.AUTHORID order by ID", new AuthorMapper());
+        List<Genre> genres = jdbc.query("select distinct ID, NAME from GENRES join BOOKS_GENRES on GENRES.ID = BOOKS_GENRES.GENREID order by ID", new GenreMapper());
+        List<BooksAuthorsDto> booksAuthors = jdbc.query("select BOOKID, AUTHORID from BOOKS_AUTHORS order by BOOKID", new BooksAuthorsMapper());
+        List<BooksGenresDto> booksGenres = jdbc.query("select BOOKID, GENREID from BOOKS_GENRES order by BOOKID", new BooksGenresMapper());
+        Map<Long, List<Author>> booksAuthorsMap = listBooksAuthorsToMap(authors, booksAuthors);
+        Map<Long, List<Genre>> booksGenresMap = listBooksGenresToMap(genres, booksGenres);
+        for (Book book: books) {
+            book.setAuthors(booksAuthorsMap.get(book.getId()));
+            book.setGenres(booksGenresMap.get(book.getId()));
+        }
+        return books;
     }
 
     @Override
     public void deleteById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        jdbc.update("delete from BOOKS_AUTHORS where BOOKID = :id", params);
-        jdbc.update("delete from BOOKS_GENRES where BOOKID = :id", params);
         jdbc.update("delete from BOOKS where ID = :id", params);
     }
 
@@ -122,14 +130,53 @@ public class BookDaoJdbc implements BookDao {
         return jdbc.getJdbcOperations().queryForObject("select max(id) from BOOKS", Long.class) + 1;
     }
 
-    private static class BookMapper implements RowMapper<BookDTO> {
+    private Map<Long, Author> listAuthorToMap(List<Author> list) {
+        Map<Long, Author> result = new HashMap<>();
+        for (Author item: list) {
+            result.put(item.getId(), item);
+        }
+        return result;
+    }
+
+    private Map<Long, Genre> listGenreToMap(List<Genre> list) {
+        Map<Long, Genre> result = new HashMap<>();
+        for (Genre item: list) {
+            result.put(item.getId(), item);
+        }
+        return result;
+    }
+
+    private Map<Long, List<Author>> listBooksAuthorsToMap(List<Author> authors, List<BooksAuthorsDto> list) {
+        Map<Long, List<Author>> result = new HashMap<>();
+        Map<Long, Author> authorsMap = listAuthorToMap(authors);
+        for (BooksAuthorsDto item: list) {
+            if (!result.containsKey(item.getBookId())) {
+                result.put(item.getBookId(), new ArrayList<>());
+            }
+            result.get(item.getBookId()).add(authorsMap.get(item.getAuthorId()));
+        }
+        return result;
+    }
+
+    private Map<Long, List<Genre>> listBooksGenresToMap(List<Genre> genres, List<BooksGenresDto> list) {
+        Map<Long, List<Genre>> result = new HashMap<>();
+        Map<Long, Genre> genresMap = listGenreToMap(genres);
+        for (BooksGenresDto item: list) {
+            if (!result.containsKey(item.getBookId())) {
+                result.put(item.getBookId(), new ArrayList<>());
+            }
+            result.get(item.getBookId()).add(genresMap.get(item.getGenreId()));
+        }
+        return result;
+    }
+
+    private static class BookMapper implements RowMapper<Book> {
 
         @Override
-        public BookDTO mapRow(ResultSet resultSet, int i) throws SQLException {
-            int id = resultSet.getInt("id");
+        public Book mapRow(ResultSet resultSet, int i) throws SQLException {
+            long id = resultSet.getLong("id");
             String name = resultSet.getString("name");
-            BookDTO result = new BookDTO();
-            result.setBook(new Book(id, name));
+            Book result = new Book(id, name);
             return result;
         }
     }
@@ -138,9 +185,20 @@ public class BookDaoJdbc implements BookDao {
 
         @Override
         public Author mapRow(ResultSet resultSet, int i) throws SQLException {
-            int id = resultSet.getInt("id");
+            long id = resultSet.getLong("id");
             String name = resultSet.getString("name");
             Author result = new Author(id, name);
+            return result;
+        }
+    }
+
+    private static class BooksAuthorsMapper implements RowMapper<BooksAuthorsDto> {
+
+        @Override
+        public BooksAuthorsDto mapRow(ResultSet resultSet, int i) throws SQLException {
+            long bookId = resultSet.getLong("bookid");
+            long authorId = resultSet.getLong("authorid");
+            BooksAuthorsDto result = new BooksAuthorsDto(bookId, authorId);
             return result;
         }
     }
@@ -156,54 +214,43 @@ public class BookDaoJdbc implements BookDao {
         }
     }
 
-    private class BooksExtractor implements ResultSetExtractor<List<BookDTO>> {
+    private static class BooksGenresMapper implements RowMapper<BooksGenresDto> {
 
-        public List<BookDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            List<BookDTO> list = new ArrayList<BookDTO>();
-            BookDTO bookDTO = null;
+        @Override
+        public BooksGenresDto mapRow(ResultSet resultSet, int i) throws SQLException {
+            long bookId = resultSet.getLong("bookid");
+            long genreId = resultSet.getLong("genreid");
+            BooksGenresDto result = new BooksGenresDto(bookId, genreId);
+            return result;
+        }
+    }
+
+    /*private class BooksExtractor implements ResultSetExtractor<List<Book>> {
+
+        public List<Book> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<Book> list = new ArrayList<Book>();
+            Book book = null;
             long currentBookId = 0;
             int i = 1;
             while(rs.next()){
                 long bookId = rs.getLong("ID");
                 if (currentBookId != bookId) {
-                    bookDTO = new BookDTO();
-                    bookDTO.setBook(new Book(bookId, rs.getString("NAME")));
-                    list.add(bookDTO);
+                    book = new Book(bookId, rs.getString("NAME"));
+                    list.add(book);
                     currentBookId = bookId;
                 }
                 Long authorID = rs.getLong("authorID");
                 String authorName = rs.getString("authorName");
                 if (authorID != 0) {
-                    bookDTO.addAuthor(new Author(authorID, authorName));
+                    book.addAuthor(new Author(authorID, authorName));
                 }
                 Long genreID = rs.getLong("genreID");
                 String genreName = rs.getString("genreName");
                 if (genreID != 0) {
-                    bookDTO.addGenre(new Genre(genreID, genreName));
+                    book.addGenre(new Genre(genreID, genreName));
                 }
             }
             return list;
         }
-    }
-
-    private class BookExtractor implements ResultSetExtractor<BookDTO> {
-
-        public BookDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
-            BookDTO bookDTO = new BookDTO();
-            while(rs.next()){
-                if (bookDTO.getBook() == null) {
-                    bookDTO.setBook(new Book(rs.getLong("ID"), rs.getString("NAME")));
-                }
-                Long authorID = rs.getLong("authorID");
-                if (authorID != null) {
-                    bookDTO.addAuthor(new Author(authorID, rs.getString("authorName")));
-                }
-                Long genreID = rs.getLong("genreID");
-                if (genreID != null) {
-                    bookDTO.addGenre(new Genre(genreID, rs.getString("genreName")));
-                }
-            }
-            return bookDTO;
-        }
-    }
+    }*/
 }

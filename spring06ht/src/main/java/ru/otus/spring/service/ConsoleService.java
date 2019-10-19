@@ -2,14 +2,14 @@ package ru.otus.spring.service;
 
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.dto.BookDTO;
+import ru.otus.spring.domain.Book;
 
 import java.util.List;
 
 public interface ConsoleService {
 
-    void printBook(BookDTO book);
-    void printBookList(List<BookDTO> list);
+    void printBook(Book book);
+    void printBookList(List<Book> list);
     void printAuthorList(List<Author> list);
     void printGenreList(List<Genre> list);
     String enterBookName();

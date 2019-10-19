@@ -64,10 +64,7 @@ public class GenreDaoJdbc implements GenreDao {
     @Override
     public void deleteById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        jdbc.update("delete from BOOKS_GENRES where GENREID = :id", params
-        );
-        jdbc.update("delete from GENRES where ID = :id", params
-        );
+        jdbc.update("delete from GENRES where ID = :id", params);
     }
 
     @Override

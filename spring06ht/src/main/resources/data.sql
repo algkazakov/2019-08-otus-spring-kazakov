@@ -1,17 +1,17 @@
-insert into BOOKS (ID, `NAME`) values (1, 'Java Persistence with Hibernate');
-insert into BOOKS (ID, `NAME`) values (2, 'Spring in Action');
-insert into BOOKS (ID, `NAME`) values (3, 'Head First. Программирование для Android');
+insert into BOOKS (`NAME`) values ('Java Persistence with Hibernate');
+insert into BOOKS (`NAME`) values ('Spring in Action');
+insert into BOOKS (`NAME`) values ('Head First. Программирование для Android');
 
-insert into AUTHORS (ID, `NAME`) values (1, 'Christian Bauer');
-insert into AUTHORS (ID, `NAME`) values (2, 'Gavin King');
-insert into AUTHORS (ID, `NAME`) values (3, 'Gary Gregory');
-insert into AUTHORS (ID, `NAME`) values (4, 'Craig Walls');
-insert into AUTHORS (ID, `NAME`) values (5, 'Дэвид Гриффитс');
-insert into AUTHORS (ID, `NAME`) values (6, 'Дон Гриффитс');
+insert into AUTHORS (`NAME`) values ('Christian Bauer');
+insert into AUTHORS (`NAME`) values ('Gavin King');
+insert into AUTHORS (`NAME`) values ('Gary Gregory');
+insert into AUTHORS (`NAME`) values ('Craig Walls');
+insert into AUTHORS (`NAME`) values ('Дэвид Гриффитс');
+insert into AUTHORS (`NAME`) values ('Дон Гриффитс');
 
-insert into GENRES(ID, `NAME`) values (1, 'Java development');
-insert into GENRES (ID, `NAME`) values (2, 'Spring development');
-insert into GENRES (ID, `NAME`) values (3, 'Mobile development');
+insert into GENRES(`NAME`) values ('Java development');
+insert into GENRES (`NAME`) values ('Spring development');
+insert into GENRES (`NAME`) values ('Mobile development');
 
 insert into BOOKS_AUTHORS (BOOKID, AUTHORID) values (1, 1);
 insert into BOOKS_AUTHORS (BOOKID, AUTHORID) values (1, 2);
