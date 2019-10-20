@@ -20,6 +20,4 @@ public interface GenreDao {
     List<Genre> getListById(List<Long> ids);
 
     void deleteById(long id);
-
-    long getNextId();
 }

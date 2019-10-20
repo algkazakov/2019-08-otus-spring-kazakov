@@ -1,7 +1,7 @@
 package ru.otus.spring.service;
 
 public interface BookService {
-    void list();
+    void loadAndPrintBookList();
     void add();
     void edit();
     void remove();

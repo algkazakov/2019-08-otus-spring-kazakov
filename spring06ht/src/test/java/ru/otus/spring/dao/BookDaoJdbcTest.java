@@ -61,12 +61,11 @@ class BookDaoJdbcTest {
     @DisplayName("должен добавлять ровно 1 книгу c 2 авторами")
     @Test
     void shouldAddOneBook() {
-        long nexBookId = repositoryJdbc.getNextId();
         Book book = new Book(0, "Новая книга");
         book.addAuthor(new Author(1, "Christian Bauer"));
         book.addAuthor(new Author(2, "Gavin King"));
         repositoryJdbc.insert(book);
-        book = repositoryJdbc.getById(nexBookId);
+        book = repositoryJdbc.getById(5);
         assertThat(book).isNotNull()
                 .matches(b -> !b.getName().equals(""))
                 .matches(b -> b.getAuthors() != null && b.getAuthors().size() == 2)
@@ -88,7 +87,7 @@ class BookDaoJdbcTest {
 
     @DisplayName("должен удалять книгу")
     @Test
-    void shouldDeleteBookNameAndAddAuthor() {
+    void shouldDeleteBook() {
         repositoryJdbc.deleteById(4);
         Book book = repositoryJdbc.getById(4);
         assertThat(book).isNull();

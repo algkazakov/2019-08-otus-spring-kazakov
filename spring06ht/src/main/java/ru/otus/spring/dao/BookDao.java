@@ -19,6 +19,4 @@ public interface BookDao {
     List<Book> getAllFull();
 
     void deleteById(long id);
-
-    long getNextId();
 }

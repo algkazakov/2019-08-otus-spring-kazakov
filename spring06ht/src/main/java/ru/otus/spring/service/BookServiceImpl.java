@@ -26,7 +26,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void list() {
+    public void loadAndPrintBookList() {
         List<Book> list = dao.getAllFull();
         consoleService.printBookList(list);
     }
@@ -72,7 +72,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void remove() {
-        list();
+        loadAndPrintBookList();
         long bookId = consoleService.enterBookNumber();
         dao.deleteById(bookId);
     }

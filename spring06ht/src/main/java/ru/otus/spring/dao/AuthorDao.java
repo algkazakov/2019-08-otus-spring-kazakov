@@ -19,6 +19,4 @@ public interface AuthorDao {
     List<Author> getListById(List<Long> ids);
 
     void deleteById(long id);
-
-    long getNextId();
 }

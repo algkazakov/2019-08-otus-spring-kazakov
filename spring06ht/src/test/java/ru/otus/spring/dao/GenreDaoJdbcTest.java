@@ -23,14 +23,14 @@ class GenreDaoJdbcTest {
 
     @DisplayName("должен уметь считать количество всех жанров в БД")
     @Test
-    void shouldReturnCountAuthors() {
+    void shouldReturnCountGenres() {
         val count = repositoryJdbc.count();
         assertThat(count).isEqualTo(EXPECTED_NUMBER_OF_GENRES);
     }
 
     @DisplayName("должен загружать список всех жанров")
     @Test
-    void shouldReturnCorrectAuthorsList() {
+    void shouldReturnCorrectGenresList() {
         val genres = repositoryJdbc.getAll();
         assertThat(genres).isNotNull().hasSize(EXPECTED_NUMBER_OF_GENRES)
                 .allMatch(g -> !g.getName().equals(""));
@@ -38,7 +38,7 @@ class GenreDaoJdbcTest {
 
     @DisplayName("должен загружать ровно 1 жанр")
     @Test
-    void shouldReturnOneAuthor() {
+    void shouldReturnOneGenre() {
         Genre genre = repositoryJdbc.getById(3);
         assertThat(genre).isNotNull()
                 .matches(g -> !g.getName().equals(""));
@@ -46,17 +46,16 @@ class GenreDaoJdbcTest {
 
     @DisplayName("должен добавлять ровно 1 жанр")
     @Test
-    void shouldAddOneAuthor() {
-        long nextGenreId = repositoryJdbc.getNextId();
-        Genre genre = new Genre(nextGenreId, "Entertainment");
+    void shouldAddOneGenre() {
+        Genre genre = new Genre(4, "Entertainment");
         repositoryJdbc.insert(genre);
-        Genre genreFromDB = repositoryJdbc.getById(nextGenreId);
+        Genre genreFromDB = repositoryJdbc.getById(4);
         assertThat(genre).isEqualTo(genreFromDB);
     }
 
     @DisplayName("должен изменять имя жанра")
     @Test
-    void shouldEditAuthorName() {
+    void shouldEditGenreName() {
         Genre genre = new Genre(3, "Test Driven development");
         repositoryJdbc.update(genre);
         genre = repositoryJdbc.getById(3);
@@ -66,7 +65,7 @@ class GenreDaoJdbcTest {
 
     @DisplayName("должен удалять жанр")
     @Test
-    void shouldDeleteBookNameAndAddAuthor() {
+    void shouldDeleteGenre() {
         repositoryJdbc.deleteById(3);
         Genre genre = repositoryJdbc.getById(3);
         assertThat(genre).isNull();

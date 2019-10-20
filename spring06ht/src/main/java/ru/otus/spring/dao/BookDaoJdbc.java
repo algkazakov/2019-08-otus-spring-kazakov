@@ -30,8 +30,7 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public void insert(Book book) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", book.getName());
+        Map<String, Object> params = Collections.singletonMap("name", book.getName());
         jdbc.update("insert into BOOKS (`NAME`) values (:name)", params);
         long nextBookId = jdbc.getJdbcOperations().queryForObject("select  SCOPE_IDENTITY()", Long.class);
         Book insertedBook = new Book(nextBookId, book.getName());
@@ -125,11 +124,6 @@ public class BookDaoJdbc implements BookDao {
         jdbc.update("delete from BOOKS where ID = :id", params);
     }
 
-    @Override
-    public long getNextId() {
-        return jdbc.getJdbcOperations().queryForObject("select max(id) from BOOKS", Long.class) + 1;
-    }
-
     private Map<Long, Author> listAuthorToMap(List<Author> list) {
         Map<Long, Author> result = new HashMap<>();
         for (Author item: list) {
@@ -181,17 +175,6 @@ public class BookDaoJdbc implements BookDao {
         }
     }
 
-    private static class AuthorMapper implements RowMapper<Author> {
-
-        @Override
-        public Author mapRow(ResultSet resultSet, int i) throws SQLException {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            Author result = new Author(id, name);
-            return result;
-        }
-    }
-
     private static class BooksAuthorsMapper implements RowMapper<BooksAuthorsDto> {
 
         @Override
@@ -199,17 +182,6 @@ public class BookDaoJdbc implements BookDao {
             long bookId = resultSet.getLong("bookid");
             long authorId = resultSet.getLong("authorid");
             BooksAuthorsDto result = new BooksAuthorsDto(bookId, authorId);
-            return result;
-        }
-    }
-
-    private static class GenreMapper implements RowMapper<Genre> {
-
-        @Override
-        public Genre mapRow(ResultSet resultSet, int i) throws SQLException {
-            int id = resultSet.getInt("id");
-            String name = resultSet.getString("name");
-            Genre result = new Genre(id, name);
             return result;
         }
     }
@@ -224,33 +196,4 @@ public class BookDaoJdbc implements BookDao {
             return result;
         }
     }
-
-    /*private class BooksExtractor implements ResultSetExtractor<List<Book>> {
-
-        public List<Book> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            List<Book> list = new ArrayList<Book>();
-            Book book = null;
-            long currentBookId = 0;
-            int i = 1;
-            while(rs.next()){
-                long bookId = rs.getLong("ID");
-                if (currentBookId != bookId) {
-                    book = new Book(bookId, rs.getString("NAME"));
-                    list.add(book);
-                    currentBookId = bookId;
-                }
-                Long authorID = rs.getLong("authorID");
-                String authorName = rs.getString("authorName");
-                if (authorID != 0) {
-                    book.addAuthor(new Author(authorID, authorName));
-                }
-                Long genreID = rs.getLong("genreID");
-                String genreName = rs.getString("genreName");
-                if (genreID != 0) {
-                    book.addGenre(new Genre(genreID, genreName));
-                }
-            }
-            return list;
-        }
-    }*/
 }

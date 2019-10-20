@@ -47,10 +47,9 @@ class AuthorDaoJdbcTest {
     @DisplayName("должен добавлять ровно 1 автора")
     @Test
     void shouldAddOneAuthor() {
-        long nextAuthorId = repositoryJdbc.getNextId();
-        Author author = new Author(nextAuthorId, "Agata Cristy");
+        Author author = new Author(7, "Agata Cristy");
         repositoryJdbc.insert(author);
-        Author authorFromDB = repositoryJdbc.getById(nextAuthorId);
+        Author authorFromDB = repositoryJdbc.getById(7);
         assertThat(author).isEqualTo(authorFromDB);
     }
 
@@ -66,7 +65,7 @@ class AuthorDaoJdbcTest {
 
     @DisplayName("должен удалять автора")
     @Test
-    void shouldDeleteBookNameAndAddAuthor() {
+    void shouldDeleteAuthor() {
         repositoryJdbc.deleteById(6);
         Author author = repositoryJdbc.getById(6);
         assertThat(author).isNull();

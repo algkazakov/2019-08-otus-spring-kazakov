@@ -29,10 +29,8 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public void insert(Author author) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", author.getId());
-        params.put("name", author.getName());
-        jdbc.update("insert into AUTHORS (ID, `NAME`) values (:id, :name)", params);
+        Map<String, Object> params = Collections.singletonMap("name", author.getName());
+        jdbc.update("insert into AUTHORS (`NAME`) values (:name)", params);
     }
 
     @Override
@@ -70,22 +68,8 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public long getNextId() {
-        return jdbc.getJdbcOperations().queryForObject("select max(id) from AUTHORS", Long.class) + 1;
-    }
-
-    @Override
     public List<Author> getAll() {
         return jdbc.query("select * from AUTHORS", new AuthorMapper());
     }
 
-    private static class AuthorMapper implements RowMapper<Author> {
-
-        @Override
-        public Author mapRow(ResultSet resultSet, int i) throws SQLException {
-            int id = resultSet.getInt("id");
-            String name = resultSet.getString("name");
-            return new Author(id, name);
-        }
-    }
 }

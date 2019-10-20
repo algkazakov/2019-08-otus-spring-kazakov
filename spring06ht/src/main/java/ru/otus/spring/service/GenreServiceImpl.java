@@ -18,7 +18,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public void list() {
+    public void loadAndPrintGenreList() {
         List<Genre> list = daoGenre.getAll();
         consoleService.printGenreList(list);
     }
@@ -26,7 +26,7 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public void add() {
         String genreName = consoleService.enterGenreName();
-        daoGenre.insert(new Genre(daoGenre.getNextId(), genreName));
+        daoGenre.insert(new Genre(0, genreName));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public void remove() {
-        list();
+        loadAndPrintGenreList();
         long genreId = consoleService.enterGenreNumber();
         daoGenre.deleteById(genreId);
     }

@@ -27,10 +27,8 @@ public class GenreDaoJdbc implements GenreDao {
 
     @Override
     public void insert(Genre genre) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", genre.getId());
-        params.put("name", genre.getName());
-        jdbc.update("insert into GENRES (ID, `NAME`) values (:id, :name)", params);
+        Map<String, Object> params = Collections.singletonMap("name", genre.getName());
+        jdbc.update("insert into GENRES (`NAME`) values (:name)", params);
     }
 
     @Override
@@ -68,22 +66,7 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public long getNextId() {
-        return jdbc.getJdbcOperations().queryForObject("select max(id) from GENRES", Long.class) + 1;
-    }
-
-    @Override
     public List<Genre> getAll() {
         return jdbc.query("select * from GENRES", new GenreMapper());
-    }
-
-    private static class GenreMapper implements RowMapper<Genre> {
-
-        @Override
-        public Genre mapRow(ResultSet resultSet, int i) throws SQLException {
-            int id = resultSet.getInt("id");
-            String name = resultSet.getString("name");
-            return new Genre(id, name);
-        }
     }
 }

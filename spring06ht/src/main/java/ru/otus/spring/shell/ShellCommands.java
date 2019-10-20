@@ -21,7 +21,7 @@ public class ShellCommands {
 
     @ShellMethod(value = "Books list", key = {"list", "lst", "l"})
     public void listBooks() {
-        bookService.list();
+        bookService.loadAndPrintBookList();
     }
 
     @ShellMethod(value = "Add book", key = {"add", "a"})
@@ -41,7 +41,7 @@ public class ShellCommands {
 
     @ShellMethod(value = "Authors list", key = {"listAuthors", "lstAuth", "la"})
     public void listAuthors() {
-        authorService.list();
+        authorService.loadAndPrintAuthorList();
     }
 
     @ShellMethod(value = "Add author", key = {"addAuthor", "aa"})
@@ -61,7 +61,7 @@ public class ShellCommands {
 
     @ShellMethod(value = "Genres list", key = {"listGenres", "lstGen", "lg"})
     public void listGenres() {
-        genreService.list();
+        genreService.loadAndPrintGenreList();
     }
 
     @ShellMethod(value = "Add genre", key = {"addGenre", "ag"})

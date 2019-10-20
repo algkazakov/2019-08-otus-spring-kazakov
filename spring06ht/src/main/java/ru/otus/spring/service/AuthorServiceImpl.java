@@ -18,7 +18,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void list() {
+    public void loadAndPrintAuthorList() {
         List<Author> list = daoAuthor.getAll();
         consoleService.printAuthorList(list);
     }
@@ -26,7 +26,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void add() {
         String authorName = consoleService.enterAuthorName();
-        daoAuthor.insert(new Author(daoAuthor.getNextId(), authorName));
+        daoAuthor.insert(new Author(0, authorName));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void remove() {
-        list();
+        loadAndPrintAuthorList();
         long authorId = consoleService.enterAuthorNumber();
         daoAuthor.deleteById(authorId);
     }
