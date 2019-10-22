@@ -36,21 +36,12 @@ public class BookDaoJdbc implements BookDao {
         Book insertedBook = new Book(nextBookId, book.getName());
         insertedBook.setAuthors(book.getAuthors());
         insertedBook.setGenres(book.getGenres());
-        setAuthorsAndGenres(insertedBook);
+        saveAuthorsForBook(insertedBook);
+        saveGenresForBook(insertedBook);
     }
 
-    private void setAuthorsAndGenres(Book book) {
+    private void saveGenresForBook(Book book) {
         Map<String, Object> params;
-        if (!book.getAuthors().isEmpty()) {
-            Map[] paramaterArray = new Map[book.getAuthors().size()];
-            for (int i = 0; i < book.getAuthors().size(); i++) {
-                params = new HashMap<>();
-                params.put("bookid", book.getId());
-                params.put("authorid", ((Author) book.getAuthors().toArray()[i]).getId());
-                paramaterArray[i] = params;
-            }
-            jdbc.batchUpdate("insert into BOOKS_AUTHORS (BOOKID, AUTHORID) values (:bookid, :authorid)", paramaterArray);
-        }
         if (!book.getGenres().isEmpty()) {
             Map[] paramaterArray = new Map[book.getGenres().size()];
             for (int i = 0; i < book.getGenres().size(); i++) {
@@ -63,6 +54,20 @@ public class BookDaoJdbc implements BookDao {
         }
     }
 
+    private void saveAuthorsForBook(Book book) {
+        Map<String, Object> params;
+        if (!book.getAuthors().isEmpty()) {
+            Map[] paramaterArray = new Map[book.getAuthors().size()];
+            for (int i = 0; i < book.getAuthors().size(); i++) {
+                params = new HashMap<>();
+                params.put("bookid", book.getId());
+                params.put("authorid", ((Author) book.getAuthors().toArray()[i]).getId());
+                paramaterArray[i] = params;
+            }
+            jdbc.batchUpdate("insert into BOOKS_AUTHORS (BOOKID, AUTHORID) values (:bookid, :authorid)", paramaterArray);
+        }
+    }
+
     @Override
     public void update(Book book) {
         Map<String, Object> params = new HashMap<>();
@@ -72,7 +77,8 @@ public class BookDaoJdbc implements BookDao {
         if (!book.getAuthors().isEmpty()) {
             jdbc.update("delete from BOOKS_AUTHORS where BOOKID = :id", params);
             jdbc.update("delete from BOOKS_GENRES where BOOKID = :id", params);
-            setAuthorsAndGenres(book);
+            saveAuthorsForBook(book);
+            saveGenresForBook(book);
         }
     }
 
