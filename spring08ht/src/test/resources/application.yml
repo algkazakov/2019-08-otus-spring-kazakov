@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    initialization-mode: always
+
+  jpa:
+    generate-ddl: false
+    #generate-ddl: true
+    hibernate:
+      ddl-auto: none
+
+  shell:
+    interactive:
+      enabled: false
