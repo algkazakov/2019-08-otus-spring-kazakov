@@ -69,16 +69,13 @@ class BookDaoJPATest {
         Book book = new Book(0, "Новая книга");
         book.getAuthors().add(new Author(1, "Christian Bauer"));
         book.getAuthors().add(new Author(2, "Gavin King"));
-        book.getComments().add(new Comment(0, "Новый комментарий"));
         repositoryJPA.insert(book);
         assertThat(book.getId()).isGreaterThan(0);
         Book bookEM = em.find(Book.class, book.getId());
         assertThat(bookEM).isNotNull()
                 .matches(b -> b.getName().equals(book.getName()))
                 .matches(b -> b.getAuthors() != null && b.getAuthors().size() == 2)
-                .matches(b -> b.getGenres() != null && b.getGenres().isEmpty())
-                .matches(b -> b.getComments() != null && b.getComments().size() == 1);
-    }
+                .matches(b -> b.getGenres() != null && b.getGenres().isEmpty());    }
 
     @DisplayName("должен изменять имя книги и ее автора")
     @Test
@@ -101,6 +98,4 @@ class BookDaoJPATest {
         Book book = repositoryJPA.getById(1);
         assertThat(book).isNull();
     }
-
-
 }

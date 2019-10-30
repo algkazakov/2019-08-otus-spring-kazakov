@@ -3,6 +3,7 @@ package ru.otus.spring.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 
@@ -18,4 +19,9 @@ class Comment {
     private long id;
     @Column(name = "COMMENT_TEXT", nullable = false, unique = true)
     private String text;
+
+    @ManyToOne(targetEntity = Book.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "BOOKID")
+    @BatchSize(size = 5)
+    private Book book;
 }

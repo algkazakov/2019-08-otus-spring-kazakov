@@ -65,7 +65,7 @@ public class ConsoleServiceImpl implements ConsoleService {
     }
 
     @Override
-    public void printCommentList(Set<Comment> list) {
+    public void printCommentList(List<Comment> list) {
         for (Comment comment: list) {
             System.out.println(comment.getId() + ". " + comment.getText());
         }

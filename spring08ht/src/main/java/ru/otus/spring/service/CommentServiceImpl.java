@@ -24,21 +24,20 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void loadAndPrintCommentList() {
         List<Book> list = dao.getAll();
-        consoleService.printBookList(list);
+        consoleService.printBookListLite(list);
         long bookId = consoleService.enterBookNumber();
-        Book book = dao.getById(bookId);
-        consoleService.printCommentList(book.getComments());
+        consoleService.printCommentList(daoComment.getListByBookId(bookId));
     }
 
     @Override
     public void add() {
         List<Book> list = dao.getAll();
-        consoleService.printBookList(list);
+        consoleService.printBookListLite(list);
         long bookId = consoleService.enterBookNumber();
-        String comment = consoleService.enterComment();
+        String commentText = consoleService.enterComment();
         Book book = dao.getById(bookId);
-        book.getComments().add(new Comment(0, comment));
-        dao.update(book);
+        Comment comment = new Comment(0L, commentText, book);
+        daoComment.insert(comment);
     }
 
     

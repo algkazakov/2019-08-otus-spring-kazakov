@@ -16,7 +16,7 @@ public interface ConsoleService {
     void printBookListLite(List<Book> list);
     void printAuthorList(List<Author> list);
     void printGenreList(List<Genre> list);
-    void printCommentList(Set<Comment> list);
+    void printCommentList(List<Comment> list);
     String enterBookName();
     long enterBookNumber();
     String enterAuthorName();
