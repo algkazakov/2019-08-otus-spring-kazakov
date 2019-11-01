@@ -39,7 +39,7 @@ public class BookDaoJPA implements BookDao {
     public Book getById(long id) {
         try {
             TypedQuery<Book> query = em.createQuery(
-                    "select b from Book b where b.id = :id",
+                   "select b from Book b where b.id = :id",
                     Book.class);
             query.setParameter("id", id);
             return query.getSingleResult();
