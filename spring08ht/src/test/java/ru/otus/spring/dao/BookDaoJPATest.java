@@ -38,7 +38,7 @@ class BookDaoJPATest {
     @DisplayName("должен загружать список всех книг с полной информацией о них")
     @Test
     void shouldReturnCorrectBooksListWithAllInfo() {
-        val books = repositoryJPA.getAllFull();
+        val books = repositoryJPA.getAll();
         assertThat(books).isNotNull().hasSize(EXPECTED_NUMBER_OF_BOOKS)
                 .allMatch(b -> !b.getName().equals(""))
                 .allMatch(b -> b.getAuthors() != null && b.getAuthors().size() > 0)

@@ -39,7 +39,7 @@ public class BookDaoJPA implements BookDao {
     public Book getById(long id) {
         try {
             TypedQuery<Book> query = em.createQuery(
-                    "select b from Book b join fetch b.authors join fetch b.genres where b.id = :id",
+                   "select b from Book b where b.id = :id",
                     Book.class);
             query.setParameter("id", id);
             return query.getSingleResult();
@@ -53,14 +53,6 @@ public class BookDaoJPA implements BookDao {
         TypedQuery<Book> query = em.createQuery(
                     "select b from Book b order by b.id",
                     Book.class);
-        return query.getResultList();
-    }
-
-    @Override
-    public List<Book> getAllFull() {
-        TypedQuery<Book> query = em.createQuery(
-                "select distinct b from Book b join fetch b.authors join fetch b.genres order by b.id",
-                Book.class);
         return query.getResultList();
     }
 

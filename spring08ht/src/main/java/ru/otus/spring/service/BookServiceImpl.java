@@ -27,7 +27,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void loadAndPrintBookList() {
-        List<Book> list = dao.getAllFull();
+        List<Book> list = dao.getAll();
         consoleService.printBookList(list);
     }
 

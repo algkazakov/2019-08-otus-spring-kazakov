@@ -26,7 +26,7 @@ class Book {
     @Column(name = "NAME", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(targetEntity = Author.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(targetEntity = Author.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "BOOKS_AUTHORS",
             joinColumns = {@JoinColumn(name = "BOOKID")},
@@ -35,7 +35,7 @@ class Book {
     @Fetch(FetchMode.SUBSELECT)
     private final Set<Author> authors = new HashSet<>();
 
-    @ManyToMany(targetEntity = Genre.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(targetEntity = Genre.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "BOOKS_GENRES",
             joinColumns = {@JoinColumn(name = "BOOKID")},
