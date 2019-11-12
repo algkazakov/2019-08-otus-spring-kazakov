@@ -11,21 +11,25 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
+import ru.otus.spring.domain.Comment;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Репозиторий на основе JPA для работы с книгами ")
+@DisplayName("Репозиторий на основе mongo для работы с книгами ")
 @DataMongoTest
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.spring.config", "ru.otus.spring.dao"})
-class BookDaoJPATest {
+class BookDaoTest {
 
     @Autowired
     private BookDao repositoryJPA;
     @Autowired
     private AuthorDao repositoryAuthorJPA;
+    @Autowired
+    private CommentDao repositoryCommentJPA;
 
 
     @DisplayName("должен загружать список всех книг с полной информацией о них")
@@ -84,6 +88,8 @@ class BookDaoJPATest {
         repositoryJPA.deleteById(book.getId());
         val oldBook = repositoryJPA.findById(book.getId());
         assertThat(oldBook).isEmpty();
+        List<Comment> list = repositoryCommentJPA.findAll();
+        list.size();
     }
 
 

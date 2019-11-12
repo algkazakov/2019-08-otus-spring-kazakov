@@ -15,9 +15,20 @@ import java.util.List;
 @ChangeLog(order = "001")
 public class InitMongoDBDataChangeLog {
 
-    Author ChristianBauer, GavinKing, GaryGregory, CraigWalls, DavidGriffits, DonGriffits;
-    Genre JavaDevelopment, SpringDevelopment, MobileDevelopment;
-    Book JavaPersistenceWithHibernate, SpringInAction, HeadFirst;
+    private Author authorChristianBauer;
+    private Author authorGavinKing;
+    private Author authorGaryGregory;
+    private Author authorCraigWalls;
+    private Author authorDavidGriffits;
+    private Author authorDonGriffits;
+
+    private Genre genreJavaDevelopment;
+    private Genre genreSpringDevelopment;
+    private Genre genreMobileDevelopment;
+
+    private Book bookJavaPersistenceWithHibernate;
+    private Book bookSpringInAction;
+    private Book bookHeadFirst;
 
     @ChangeSet(order = "000", id = "dropDB", author = "akazakov", runAlways = true)
     public void dropDB(MongoDatabase database){
@@ -26,37 +37,37 @@ public class InitMongoDBDataChangeLog {
 
     @ChangeSet(order = "001", id = "initAuthors", author = "akazakov", runAlways = true)
     public void initAuthors(MongoTemplate template){
-        ChristianBauer = template.save(new Author("Christian Bauer"));
-        GavinKing = template.save(new Author("Gavin King"));
-        GaryGregory = template.save(new Author("Gary Gregory"));
-        CraigWalls = template.save(new Author("Craig Walls"));
-        DavidGriffits = template.save(new Author("Дэвид Гриффитс"));
-        DonGriffits = template.save(new Author("Дон Гриффитс"));
+        authorChristianBauer = template.save(new Author("Christian Bauer"));
+        authorGavinKing = template.save(new Author("Gavin King"));
+        authorGaryGregory = template.save(new Author("Gary Gregory"));
+        authorCraigWalls = template.save(new Author("Craig Walls"));
+        authorDavidGriffits = template.save(new Author("Дэвид Гриффитс"));
+        authorDonGriffits = template.save(new Author("Дон Гриффитс"));
     }
 
     @ChangeSet(order = "002", id = "initGenres", author = "akazakov", runAlways = true)
     public void initGenres(MongoTemplate template){
-        JavaDevelopment = template.save(new Genre("Java development"));
-        SpringDevelopment = template.save(new Genre("Spring development"));
-        MobileDevelopment = template.save(new Genre("Mobile development"));
+        genreJavaDevelopment = template.save(new Genre("Java development"));
+        genreSpringDevelopment = template.save(new Genre("Spring development"));
+        genreMobileDevelopment = template.save(new Genre("Mobile development"));
     }
 
     @ChangeSet(order = "003", id = "initBooks", author = "akazakov", runAlways = true)
     public void initBooks(MongoTemplate template){
-        List<Author> authors = Arrays.asList(new Author[]{ChristianBauer, GavinKing, GaryGregory});
-        List<Genre> genres = Arrays.asList(new Genre[]{JavaDevelopment});
-        JavaPersistenceWithHibernate = template.save(new Book("Java Persistence with Hibernate", authors, genres));
-        authors = Arrays.asList(new Author[]{CraigWalls});
-        genres = Arrays.asList(new Genre[]{SpringDevelopment});
-        SpringInAction = template.save(new Book("Spring in Action", authors, genres));
-        authors = Arrays.asList(new Author[]{DavidGriffits, DonGriffits});
-        genres = Arrays.asList(new Genre[]{JavaDevelopment, MobileDevelopment});
-        HeadFirst = template.save(new Book("Head First. Программирование для Android", authors, genres));
+        List<Author> authors = Arrays.asList(authorChristianBauer, authorGavinKing, authorGaryGregory);
+        List<Genre> genres = Arrays.asList(genreJavaDevelopment);
+        bookJavaPersistenceWithHibernate = template.save(new Book("Java Persistence with Hibernate", authors, genres));
+        authors = Arrays.asList(authorCraigWalls);
+        genres = Arrays.asList(genreSpringDevelopment);
+        bookSpringInAction = template.save(new Book("Spring in Action", authors, genres));
+        authors = Arrays.asList(authorDavidGriffits, authorDonGriffits);
+        genres = Arrays.asList(genreJavaDevelopment, genreMobileDevelopment);
+        bookHeadFirst = template.save(new Book("Head First. Программирование для Android", authors, genres));
     }
 
     @ChangeSet(order = "004", id = "initComments", author = "akazakov", runAlways = true)
     public void initComments(MongoTemplate template){
-        template.save(new Comment("Cool book", JavaPersistenceWithHibernate));
-        template.save(new Comment("So-so", JavaPersistenceWithHibernate));
+        template.save(new Comment("Cool book", bookJavaPersistenceWithHibernate));
+        template.save(new Comment("So-so", bookJavaPersistenceWithHibernate));
     }
 }

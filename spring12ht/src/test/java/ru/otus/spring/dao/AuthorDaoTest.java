@@ -11,11 +11,11 @@ import ru.otus.spring.domain.Author;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Репозиторий на основе JPA для работы с авторами ")
+@DisplayName("Репозиторий на основе mongo для работы с авторами ")
 @DataMongoTest
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.spring.config", "ru.otus.spring.dao"})
-class AuthorDaoJPATest {
+class AuthorDaoTest {
 
     private static final int EXPECTED_NUMBER_OF_AUTHORS = 6;
 

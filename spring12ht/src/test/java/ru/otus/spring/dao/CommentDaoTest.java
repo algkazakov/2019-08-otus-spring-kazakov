@@ -16,11 +16,11 @@ import ru.otus.spring.domain.Comment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Репозиторий на основе JPA для работы с комментариями к книгам ")
+@DisplayName("Репозиторий на основе mongo для работы с комментариями к книгам ")
 @DataMongoTest
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.spring.config", "ru.otus.spring.dao"})
-class CommentDaoJPATest {
+class CommentDaoTest {
 
     @Autowired
     private CommentDao repository;

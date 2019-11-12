@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ class Book {
 
     @Id
     private String id;
+    @Field
     private String name;
     @DBRef
     private Set<Author> authors = new HashSet<>();

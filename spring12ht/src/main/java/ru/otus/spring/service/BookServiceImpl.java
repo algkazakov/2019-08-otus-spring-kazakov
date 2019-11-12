@@ -5,8 +5,8 @@ import ru.otus.spring.dao.AuthorDao;
 import ru.otus.spring.dao.BookDao;
 import ru.otus.spring.dao.GenreDao;
 import ru.otus.spring.domain.Author;
-import ru.otus.spring.domain.Genre;
 import ru.otus.spring.domain.Book;
+import ru.otus.spring.domain.Genre;
 
 import java.util.List;
 
@@ -56,6 +56,9 @@ public class BookServiceImpl implements BookService {
     public void edit() {
         loadAndPrintBookListLite();
         String bookId = consoleService.enterBookNumber();
+        while (bookId == null) {
+            bookId = consoleService.enterBookNumber();
+        }
         Book book = dao.findById(bookId).get();
         consoleService.printBook(book);
         String bookName = consoleService.enterBookName();
