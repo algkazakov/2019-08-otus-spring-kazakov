@@ -20,7 +20,7 @@ class Book {
 
     @Id
     private String id;
-    @Field
+    @Field("name")
     private String name;
     @DBRef
     private Set<Author> authors = new HashSet<>();

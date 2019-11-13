@@ -16,7 +16,7 @@ class Comment {
 
     @Id
     private String id;
-    @Field
+    @Field("text")
     private String text;
 
     @DBRef

@@ -53,13 +53,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void edit() {
+    public void edit() throws Exception {
         loadAndPrintBookListLite();
         String bookId = consoleService.enterBookNumber();
-        while (bookId == null) {
-            bookId = consoleService.enterBookNumber();
-        }
-        Book book = dao.findById(bookId).get();
+        Book book = dao.findById(bookId == null ? "" : bookId).orElseThrow(() -> new Exception("Book with this number not found"));
         consoleService.printBook(book);
         String bookName = consoleService.enterBookName();
         Iterable<Author> aList = daoAuthor.findAll();

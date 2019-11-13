@@ -15,7 +15,7 @@ class Genre {
 
     @Id
     private String id;
-    @Field
+    @Field("name")
     private String name;
 
     public Genre(String name) { this.name = name;}

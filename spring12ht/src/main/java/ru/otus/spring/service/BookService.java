@@ -4,6 +4,6 @@ public interface BookService {
     void loadAndPrintBookList();
     void loadAndPrintBookListLite();
     void add();
-    void edit();
+    void edit() throws Exception;
     void remove();
 }

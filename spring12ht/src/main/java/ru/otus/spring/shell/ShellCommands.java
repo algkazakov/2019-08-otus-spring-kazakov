@@ -2,8 +2,8 @@ package ru.otus.spring.shell;
 
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.otus.spring.service.BookService;
 import ru.otus.spring.service.AuthorService;
+import ru.otus.spring.service.BookService;
 import ru.otus.spring.service.CommentService;
 import ru.otus.spring.service.GenreService;
 
@@ -33,7 +33,7 @@ public class ShellCommands {
     }
 
     @ShellMethod(value = "Edit book", key = {"edit", "e"})
-    public void editBook() {
+    public void editBook() throws Exception {
         bookService.edit();
     }
 
