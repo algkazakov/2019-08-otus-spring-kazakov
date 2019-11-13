@@ -7,6 +7,7 @@ import ru.otus.spring.dao.GenreDao;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
+import ru.otus.spring.exception.BookNotFoundException;
 
 import java.util.List;
 
@@ -53,10 +54,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void edit() throws Exception {
+    public void edit() {
         loadAndPrintBookListLite();
         String bookId = consoleService.enterBookNumber();
-        Book book = dao.findById(bookId == null ? "" : bookId).orElseThrow(() -> new Exception("Book with this number not found"));
+        Book book = dao.findById(bookId == null ? "" : bookId).orElseThrow(() -> new BookNotFoundException());
         consoleService.printBook(book);
         String bookName = consoleService.enterBookName();
         Iterable<Author> aList = daoAuthor.findAll();

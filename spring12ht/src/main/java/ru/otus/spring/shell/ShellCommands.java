@@ -33,7 +33,7 @@ public class ShellCommands {
     }
 
     @ShellMethod(value = "Edit book", key = {"edit", "e"})
-    public void editBook() throws Exception {
+    public void editBook() {
         bookService.edit();
     }
 
