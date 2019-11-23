@@ -37,14 +37,19 @@
         <h1>Books:</h1>
             <table class="books">
                 <thead>
-                <tr><th>Name</th>
+                <tr>
+                    <th>Author</th>
+                    <th>Name</th>
+                    <th>Genre</th>
                     <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="book, iStat : ${bookPage.content}"
                     th:alt-title="${iStat.even}? 'even' : 'odd'">
-                    <td th:text="${book.name}">John Doe</td>
+                    <td th:text="${book.authors}">Authors</td>
+                    <td th:text="${book.name}">Book name</td>
+                    <td th:text="${book.genres}">Genres</td>
                     <td>
                         <a th:href="@{/edit/{id}(id=${book.id}, size=${bookPage.size}, page=${pageNumber})}">Edit</a><br/>
                         <a th:href="@{/delete/{id}(id=${book.id}, size=${bookPage.size}, page=${pageNumber})}">Delete</a>
