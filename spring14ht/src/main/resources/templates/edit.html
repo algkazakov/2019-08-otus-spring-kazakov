@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit person</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        .authors, .authors td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Book edition -->
+<form action="#" th:action="@{/update/{id}(id=${book.id}, page=${page}, size=${size})}" method="post">
+    <h1>Book Info:</h1>
+
+    <div class="row">
+        <label for="holder-input">Name:</label>
+        <input id="holder-input" name="name" type="text" th:value="${book.name}" value="John Doe"/>
+    </div>
+
+    <div class="row">
+        <button type="submit">Save</button>
+    </div>
+
+    <h2>Authors:</h2>
+    <div class="row">
+        <a th:href="@{/addAuthor(bookId=${book.id})}">Add author to book</a>
+    </div>
+    <table class="authors">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="author : ${book.authors}">
+            <td th:text="${author.name}">John Doe</td>
+            <td>
+                <a th:href="@{/deleteAuthor(id=${author.id}, bookId=${book.id})}" href="edit.html">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Genres:</h2>
+    <div class="row">
+        <a th:href="@{/addGenre(bookId=${book.id})}">Add genre to book</a>
+    </div>
+    <table class="authors">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="genre : ${book.genres}">
+            <td th:text="${genre.name}">John Doe</td>
+            <td>
+                <a th:href="@{/deleteGenre(id=${genre.id}, bookId=${book.id})}" href="edit.html">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Comments:</h2>
+    <div class="row">
+        <a th:href="@{/addComment(bookId=${book.id})}">Add comment to book</a>
+    </div>
+    <table class="authors">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="comment : ${comments}">
+            <td th:text="${comment.text}">John Doe</td>
+            <td>
+                <a th:href="@{/deleteComment(id=${comment.id}, bookId=${book.id})}" href="edit.html">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="row">
+        <a th:if="${page} == null" href="/">Back to list of books</a>
+        <a th:if="${page} != null" th:href="@{/(page=${page}, size=${size})}">Back to list of books</a>
+    </div>
+</form>
+
+</body>
+</html>

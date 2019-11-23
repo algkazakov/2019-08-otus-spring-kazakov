@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all authors</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .authors, .authors td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+
+        .pagination {
+            display: inline-block;
+        }
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 5px 5px;
+            text-decoration: none;
+        }
+        .pagination a.active {
+            background-color: gray;
+            color: white;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:switch="${authorPage.content}">
+    <h2 th:case="null">No authors yet!</h2>
+    <div th:case="*">
+        <h1>Authors:</h1>
+            <table class="authors">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="author, iStat : ${authorPage.content}"
+                    th:alt-title="${iStat.even}? 'even' : 'odd'">
+                    <td th:text="${author.name}">John Doe</td>
+                    <td>
+                        <a th:href="@{/author/edit/{id}(id=${author.id}, size=${authorPage.size}, page=${pageNumber})}">Edit</a><br/>
+                        <a th:href="@{/author/delete/{id}(id=${author.id}, size=${authorPage.size}, page=${pageNumber})}">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <span th:if="${authorPage.totalPages > 0}" class="pagination"
+                 th:each="pageNumber : ${pageNumbers}">
+                <a th:href="@{/author/(size=${authorPage.size}, page=${pageNumber})}"
+                   th:text=${pageNumber}
+                   th:class="${pageNumber==authorPage.number + 1} ? active"></a>
+            </span>
+        </div>
+        <div><a href="/author/new">Add a new author</a></div>
+        <div><a href="/">List of books</a></div>
+    </div>
+</body>
+</html>

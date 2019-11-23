@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all books</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .books, .books td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+
+        .pagination {
+            display: inline-block;
+        }
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 5px 5px;
+            text-decoration: none;
+        }
+        .pagination a.active {
+            background-color: gray;
+            color: white;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:switch="${bookPage.content}">
+    <h2 th:case="null">No books yet!</h2>
+    <div th:case="*">
+        <h1>Books:</h1>
+            <table class="books">
+                <thead>
+                <tr><th>Name</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="book, iStat : ${bookPage.content}"
+                    th:alt-title="${iStat.even}? 'even' : 'odd'">
+                    <td th:text="${book.name}">John Doe</td>
+                    <td>
+                        <a th:href="@{/edit/{id}(id=${book.id}, size=${bookPage.size}, page=${pageNumber})}">Edit</a><br/>
+                        <a th:href="@{/delete/{id}(id=${book.id}, size=${bookPage.size}, page=${pageNumber})}">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${bookPage.totalPages > 0}" class="pagination"
+                 th:each="pageNumber : ${pageNumbers}">
+                <a th:href="@{/(size=${bookPage.size}, page=${pageNumber})}"
+                   th:text=${pageNumber}
+                   th:class="${pageNumber==bookPage.number + 1} ? active"></a>
+            </div>
+        </div>
+        <div><a href="/new">Add a new book</a></div>
+        <div><a href="/author">List of authors</a></div>
+        <div><a href="/genre">List of genres</a></div>
+    </div>
+</body>
+</html>
