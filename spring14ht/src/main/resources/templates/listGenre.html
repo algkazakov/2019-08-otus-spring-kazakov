@@ -31,7 +31,7 @@
 </head>
 <body>
 
-<div th:switch="${genrePage.content}">
+<div th:switch="${page.content}">
     <h2 th:case="null">No genres yet!</h2>
     <div th:case="*">
         <h1>Genres:</h1>
@@ -43,21 +43,23 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="genre, iStat : ${genrePage.content}"
+                <tr th:each="genre, iStat : ${page.content}"
                     th:alt-title="${iStat.even}? 'even' : 'odd'">
                     <td th:text="${genre.name}">John Doe</td>
                     <td>
-                        <a th:href="@{/genre/edit/{id}(id=${genre.id}, size=${genrePage.size}, page=${pageNumber})}">Edit</a><br/>
-                        <a th:href="@{/genre/delete/{id}(id=${genre.id}, size=${genrePage.size}, page=${pageNumber})}">Delete</a>
+                        <a th:href="@{/genre/edit/{id}(id=${genre.id}, size=${page.size}, page=${pageNumber})}">Edit</a><br/>
+                        <form action="#" th:action="@{/genre/delete/{id}(id=${genre.id}, page=${page}, size=${size})}" method="post">
+                            <button type="submit">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <span th:if="${genrePage.totalPages > 0}" class="pagination"
+            <span th:if="${page.totalPages > 0}" class="pagination"
                  th:each="pageNumber : ${pageNumbers}">
-                <a th:href="@{/genre/(size=${genrePage.size}, page=${pageNumber})}"
+                <a th:href="@{/genre/(size=${page.size}, page=${pageNumber})}"
                    th:text=${pageNumber}
-                   th:class="${pageNumber==genrePage.number + 1} ? active"></a>
+                   th:class="${pageNumber==page.number + 1} ? active"></a>
             </span>
         </div>
         <div><a href="/genre/new">Add a new genre</a></div>

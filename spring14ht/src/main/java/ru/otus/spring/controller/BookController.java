@@ -1,13 +1,8 @@
-package ru.otus.spring.rest;
+package ru.otus.spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.spring.dao.AuthorDao;
 import ru.otus.spring.dao.BookDao;
@@ -17,15 +12,13 @@ import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Comment;
 import ru.otus.spring.domain.Genre;
+import ru.otus.spring.util.PageUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Controller
 public class BookController {
@@ -45,62 +38,34 @@ public class BookController {
     }
 
     @GetMapping("/")
-    public String listBook(Model model,
-                           @RequestParam("page") Optional<Integer> page,
-                           @RequestParam("size") Optional<Integer> size) {
+    public String getBookListView(Model model,
+                                  @RequestParam("page") Optional<Integer> page,
+                                  @RequestParam("size") Optional<Integer> size) {
         List<Book> books = repository.findAll();
-        int currentPage = page.orElse(1);
-        int pageSize = size.orElse(5);
-
-        Page<Book> bookPage = findPaginated(PageRequest.of(currentPage - 1, pageSize), books);
-
-        model.addAttribute("bookPage", bookPage);
-
-        int totalPages = bookPage.getTotalPages();
-        if (totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-                    .boxed().collect(Collectors.toList());
-            model.addAttribute("pageNumbers", pageNumbers);
-            model.addAttribute("pageNumber", currentPage);
-        }
+        PageUtil.setPageInfoModel(books, page, size, model);
         return "list";
     }
 
     @GetMapping("/new")
-    public String newBook(Book book) {
+    public String addNewBookView(Book book) {
         return "add";
     }
 
     @PostMapping("/add")
-    public String addBook(@Valid Book book,
-                          BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "add";
-        }
+    public String addBook(@Valid Book book, Model model) {
         repository.save(book);
-        return listBook(model, Optional.empty(), Optional.empty());
+        return "redirect:/";
     }
 
     @GetMapping("/edit/{id}")
-    public String editBook(@PathVariable("id") String id,
-                           @RequestParam("page") Optional<Integer> page,
-                           @RequestParam("size") Optional<Integer> size, Model model) {
+    public String editBookView(@PathVariable("id") String id,
+                               @RequestParam("page") Optional<Integer> page,
+                               @RequestParam("size") Optional<Integer> size, Model model) {
         Book book = repository.findById(id).orElseThrow(NotFoundException::new);
         model.addAttribute("book", book);
         model.addAttribute("comments", repositoryComment.findByBook(book));
-        setPageNum(page, size, model);
+        PageUtil.setPageNum(page, size, model);
         return "edit";
-    }
-
-    private void setPageNum(@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size, Model model) {
-        Integer pageNum = page.orElse(1);
-        if (pageNum > 1) {
-            model.addAttribute("page", pageNum);
-        }
-        Integer sizeNum = size.orElse(1);
-        if (sizeNum > 1) {
-            model.addAttribute("size", sizeNum);
-        }
     }
 
     @PostMapping("/update/{id}")
@@ -114,22 +79,20 @@ public class BookController {
         Book book = repository.findById(id).orElseThrow(NotFoundException::new);
         book.setName(name);
         repository.save(book);
-        return listBook(model, page, size);
+        return "redirect:/?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteBook(@PathVariable("id") String id,
                              @RequestParam("page") Optional<Integer> page,
                              @RequestParam("size") Optional<Integer> size,
                              Model model) {
-        Book book = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
-        repository.delete(book);
-        return listBook(model, page, size);
+        repository.deleteById(id);
+        return "redirect:/?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
     @GetMapping("/addAuthor")
-    public String editBookAuthor(@RequestParam("bookId") String id, Model model) {
+    public String editBookAuthorView(@RequestParam("bookId") String id, Model model) {
         model.addAttribute("authors", repositoryAuthor.findAll());
         model.addAttribute("author", new Author());
         model.addAttribute("bookId", id);
@@ -146,8 +109,8 @@ public class BookController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
         book.getAuthors().add(author);
         repository.save(book);
-        setPageNum(page, size, model);
-        return editBook(id, page, size, model);
+        PageUtil.setPageNum(page, size, model);
+        return "redirect:/edit/" + id + "?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
     @GetMapping("/deleteAuthor")
@@ -161,12 +124,12 @@ public class BookController {
         Author author = repositoryAuthor.findById(authorId).orElseThrow(NotFoundException::new);
         book.getAuthors().remove(author);
         repository.save(book);
-        setPageNum(page, size, model);
-        return editBook(id, page, size, model);
+        PageUtil.setPageNum(page, size, model);
+        return "redirect:/edit/" + id + "?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
     @GetMapping("/addGenre")
-    public String editBookGenre(@RequestParam("bookId") String id, Model model) {
+    public String editBookGenreView(@RequestParam("bookId") String id, Model model) {
         model.addAttribute("genres", repositoryGenre.findAll());
         model.addAttribute("genre", new Genre());
         model.addAttribute("bookId", id);
@@ -180,12 +143,11 @@ public class BookController {
             @RequestParam("size") Optional<Integer> size,
             Model model
     ) {
-        Book book = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
+        Book book = repository.findById(id).orElseThrow(NotFoundException::new);
         book.getGenres().add(genre);
         repository.save(book);
-        setPageNum(page, size, model);
-        return editBook(id, page, size, model);
+        PageUtil.setPageNum(page, size, model);
+        return "redirect:/edit/" + id + "?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
     @GetMapping("/deleteGenre")
@@ -194,17 +156,16 @@ public class BookController {
                               @RequestParam("page") Optional<Integer> page,
                               @RequestParam("size") Optional<Integer> size,
                               Model model) {
-        Book book = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
+        Book book = repository.findById(id).orElseThrow(NotFoundException::new);
         Genre genre = repositoryGenre.findById(genreId).orElseThrow(NotFoundException::new);
         book.getGenres().remove(genre);
         repository.save(book);
-        setPageNum(page, size, model);
-        return editBook(id, page, size, model);
+        PageUtil.setPageNum(page, size, model);
+        return "redirect:/edit/" + id + "?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
     @GetMapping("/addComment")
-    public String addComment(@RequestParam("bookId") String id, Comment comment, Model model) {
+    public String addCommentView(@RequestParam("bookId") String id, Comment comment, Model model) {
         model.addAttribute("bookId", id);
         return "addComment";
     }
@@ -217,8 +178,8 @@ public class BookController {
         Book book = repository.findById(id).orElseThrow(NotFoundException::new);
         comment.setBook(book);
         repositoryComment.save(comment);
-        setPageNum(page, size, model);
-        return editBook(id, page, size, model);
+        PageUtil.setPageNum(page, size, model);
+        return "redirect:/edit/" + id + "?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
     @GetMapping("/deleteComment")
@@ -228,8 +189,8 @@ public class BookController {
                                 @RequestParam("size") Optional<Integer> size,
                                Model model) {
         repositoryComment.delete(repositoryComment.findById(commentId).orElseThrow(NotFoundException::new));
-        setPageNum(page, size, model);
-        return editBook(id, page, size, model);
+        PageUtil.setPageNum(page, size, model);
+        return "redirect:/edit/" + id + "?page=" + page.orElse(1) + "&size=" + size.orElse(5);
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -241,24 +202,5 @@ public class BookController {
         model.addAttribute("path", request.getRequestURI());
         model.addAttribute("exception", e.getClass().getName());
         return "error";
-    }
-
-    private Page<Book> findPaginated(Pageable pageable, List<Book> books) {
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
-        List<Book> list;
-
-        if (books.size() < startItem) {
-            list = Collections.emptyList();
-        } else {
-            int toIndex = Math.min(startItem + pageSize, books.size());
-            list = books.subList(startItem, toIndex);
-        }
-
-        Page<Book> bookPage
-                = new PageImpl<Book>(list, PageRequest.of(currentPage, pageSize), books.size());
-
-        return bookPage;
     }
 }

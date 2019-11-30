@@ -31,7 +31,7 @@
 </head>
 <body>
 
-<div th:switch="${authorPage.content}">
+<div th:switch="${page.content}">
     <h2 th:case="null">No authors yet!</h2>
     <div th:case="*">
         <h1>Authors:</h1>
@@ -43,21 +43,23 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="author, iStat : ${authorPage.content}"
+                <tr th:each="author, iStat : ${page.content}"
                     th:alt-title="${iStat.even}? 'even' : 'odd'">
                     <td th:text="${author.name}">John Doe</td>
                     <td>
-                        <a th:href="@{/author/edit/{id}(id=${author.id}, size=${authorPage.size}, page=${pageNumber})}">Edit</a><br/>
-                        <a th:href="@{/author/delete/{id}(id=${author.id}, size=${authorPage.size}, page=${pageNumber})}">Delete</a>
+                        <a th:href="@{/author/edit/{id}(id=${author.id}, size=${page.size}, page=${pageNumber})}">Edit</a><br/>
+                        <form action="#" th:action="@{/author/delete/{id}(id=${author.id}, page=${page}, size=${size})}" method="post">
+                            <button type="submit">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <span th:if="${authorPage.totalPages > 0}" class="pagination"
+            <span th:if="${page.totalPages > 0}" class="pagination"
                  th:each="pageNumber : ${pageNumbers}">
-                <a th:href="@{/author/(size=${authorPage.size}, page=${pageNumber})}"
+                <a th:href="@{/author/(size=${page.size}, page=${pageNumber})}"
                    th:text=${pageNumber}
-                   th:class="${pageNumber==authorPage.number + 1} ? active"></a>
+                   th:class="${pageNumber==page.number + 1} ? active"></a>
             </span>
         </div>
         <div><a href="/author/new">Add a new author</a></div>
