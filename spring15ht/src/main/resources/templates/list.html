@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all books</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .books, .books td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+
+        .pagination {
+            display: inline-block;
+        }
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 5px 5px;
+            text-decoration: none;
+        }
+        .pagination a.active {
+            background-color: gray;
+            color: white;
+            border-radius: 2px;
+        }
+    </style>
+    <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+        <h1>Books:</h1>
+            <table class="books">
+                <thead>
+                <tr>
+                    <th>Author</th>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Update Book</h4>
+                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+    $(function () {
+        $.get('/list').done(function (books) {
+            books.forEach(function (book) {
+                var authors = $.map(book.authors, function( a ) {return ' ' + a.name;});
+                var genres = $.map(book.genres, function( g ) {return ' ' + g.name;});
+                $('tbody').append(`
+                    <tr>
+                        <td>${authors}</td>
+                        <td>${book.name}</td>
+                        <td>${genres}</td>
+                        <td align="center">
+                            <button class="btn btn-success form-control" onClick="editBook('${book.id}')" data-toggle="modal" data-target="#myModal")">Edit</button>
+                        </td>
+                    </tr>
+                `)
+            });
+        })
+    });
+
+    function editBook(id) {
+        $.get('/list').done(function (books) {
+            books.forEach(function(book, i) {
+            if (book.id == id) {
+                alert("test");
+                $(".modal-body").empty().append(`
+                <form id="updateBook" action="">
+                    <label for="name">Name</label>
+                    <input class="form-control" type="text" name="name" value="${book.name}"/>
+                 `);
+                $(".modal-footer").empty().append(`
+                    <button type="button" type="submit" class="btn btn-primary" onClick="updateBook(${id})">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </form>
+                `);
+            }
+        });
+        });
+    }
+</script>
+        <div><a href="/new">Add a new book</a></div>
+        <div><a href="/author">List of authors</a></div>
+        <div><a href="/genre">List of genres</a></div>
+
+</body>
+</html>
